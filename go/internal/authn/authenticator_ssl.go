@@ -4,7 +4,6 @@ import (
 	"crypto/x509"
 	"errors"
 	"net/http"
-	"time"
 )
 
 var (
@@ -14,8 +13,7 @@ var (
 
 // SSLAuthenticator реализует аутентификацию используя SSL/TLS-сертификаты.
 type SSLAuthenticator struct {
-	RootCertificates *x509.CertPool
-	AllowAnonymous   bool
+	AllowAnonymous bool
 }
 
 func (auth SSLAuthenticator) AuthHTTP(r *http.Request) (User, error) {
@@ -25,24 +23,10 @@ func (auth SSLAuthenticator) AuthHTTP(r *http.Request) (User, error) {
 
 	certs := r.TLS.PeerCertificates
 	for _, cert := range certs {
-		if auth.validateCertificate(cert) {
-			return auth.createUserFromCert(cert), nil
-		}
+		return auth.createUserFromCert(cert), nil
 	}
 
 	return auth.createUnauthenticatedUser(ErrNoValidCertificate)
-}
-
-func (auth SSLAuthenticator) validateCertificate(crt *x509.Certificate) bool {
-	_, err := crt.Verify(x509.VerifyOptions{
-		Roots:       auth.RootCertificates,
-		CurrentTime: time.Now(),
-	})
-	if err != nil {
-		return false
-	}
-
-	return true
 }
 
 func (SSLAuthenticator) createUserFromCert(crt *x509.Certificate) User {

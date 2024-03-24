@@ -21,21 +21,24 @@ func main() {
 		}),
 	))
 
+	// load application configuration
 	cfg, err := loadFlagsConfig()
 	if err != nil {
 		slog.Error("Load config error", "error", err)
 	}
 
+	// setup request handle routing
 	mux := http.NewServeMux()
 	mux.Handle("/api/hello", HelloHandler{})
 
+	// connect HTTP server middlewares
 	handler := middleware.NewAuthMiddleware(mux, authn.SSLAuthenticator{
-		RootCertificates: &x509.CertPool{},
-		AllowAnonymous:   true,
+		AllowAnonymous: true,
 	})
 	handler = middleware.NewRecoverMiddleware(handler)
 	handler = middleware.NewLoggingMiddleware(handler)
 
+	// configure and start a HTTP server
 	server := http.Server{
 		Addr:    cfg.ListenAddr,
 		Handler: handler,
@@ -44,7 +47,7 @@ func main() {
 			ClientAuth: tls.RequestClientCert, // request, but not require client certificate
 		},
 	}
-	if err := server.ListenAndServeTLS(cfg.CertPath, cfg.CertKeyPath); err != nil {
+	if err = server.ListenAndServeTLS(cfg.CertPath, cfg.CertKeyPath); err != nil {
 		slog.Error("Server error", "error", err)
 		os.Exit(1)
 	}
