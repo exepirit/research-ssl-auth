@@ -2,7 +2,7 @@
 
 cn=$1
 dnsName=$2
-certsDir="certs"
+certsDir="."
 
 if ! [ -e $certsDir ]; then
   mkdir $certsDir
