@@ -7,19 +7,6 @@ import (
 	"net/http"
 )
 
-type TLSStateDto struct {
-	CertificatesSubjects []string `json:"certificatesSubjects"`
-}
-
-type UserDto struct {
-	ID string `json:"id"`
-}
-
-type AboutMeResponse struct {
-	User *UserDto     `json:"user"`
-	TLS  *TLSStateDto `json:"tls"`
-}
-
 // AboutMeHandler обрабатывает запрос и возвращает информацию о пользователе и соединении в сериализованой
 // модели  AboutMeResponse.
 func AboutMeHandler(writer http.ResponseWriter, request *http.Request) {
@@ -49,4 +36,20 @@ func AboutMeHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(writer).Encode(response)
+}
+
+// TLSStateDto - модель данных состояния соединения.
+type TLSStateDto struct {
+	CertificatesSubjects []string `json:"certificatesSubjects"`
+}
+
+// UserDto - модель данных пользователя.
+type UserDto struct {
+	ID string `json:"id"`
+}
+
+// AboutMeResponse - модель ответа сервера на запрос получения информации о пользователе.
+type AboutMeResponse struct {
+	User *UserDto     `json:"user"`
+	TLS  *TLSStateDto `json:"tls"`
 }
