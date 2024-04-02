@@ -3,6 +3,7 @@ package authn
 import (
 	"crypto/x509"
 	"errors"
+	"log/slog"
 	"net/http"
 )
 
@@ -17,15 +18,20 @@ type SSLAuthenticator struct {
 }
 
 func (auth SSLAuthenticator) AuthHTTP(r *http.Request) (User, error) {
+	logger := slog.With("module", "authn")
+
 	if r.TLS == nil {
+		logger.Debug("request has no TLS session")
 		return auth.createUnauthenticatedUser(ErrNoTLS)
 	}
 
 	certs := r.TLS.PeerCertificates
 	for _, cert := range certs {
+		logger.Debug("found valid client certificate", "subject", cert.Subject.String())
 		return auth.createUserFromCert(cert), nil
 	}
 
+	logger.Debug("request has no valid client certificate")
 	return auth.createUnauthenticatedUser(ErrNoValidCertificate)
 }
 
