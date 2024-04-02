@@ -34,6 +34,7 @@ func NewLoggingMiddleware(handler http.Handler) http.Handler {
 			slog.String("path", path),
 			slog.Duration("latency", latency),
 			slog.Int("statusCode", responseStatus),
+			slog.String("requestId", GetRequestID(request.Context())),
 		)
 	})
 }

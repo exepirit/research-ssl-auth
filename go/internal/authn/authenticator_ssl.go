@@ -18,7 +18,10 @@ type SSLAuthenticator struct {
 }
 
 func (auth SSLAuthenticator) AuthHTTP(r *http.Request) (User, error) {
-	logger := slog.With("module", "authn")
+	logger := slog.With(
+		"module", "authn",
+		"requestId", r.Context().Value("requestId"),
+	)
 
 	if r.TLS == nil {
 		logger.Debug("request has no TLS session")

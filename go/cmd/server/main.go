@@ -37,6 +37,7 @@ func main() {
 	})
 	handler = middleware.NewRecoverMiddleware(handler)
 	handler = middleware.NewLoggingMiddleware(handler)
+	handler = middleware.NewSetRequestIDMiddleware(handler)
 
 	// configure and start a HTTP server
 	server := http.Server{
