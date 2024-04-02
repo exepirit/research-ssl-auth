@@ -29,7 +29,7 @@ func main() {
 
 	// setup request handle routing
 	mux := http.NewServeMux()
-	mux.Handle("/api/hello", HelloHandler{})
+	mux.HandleFunc("/api/about/me", AboutMeHandler)
 
 	// connect HTTP server middlewares
 	handler := middleware.NewAuthMiddleware(mux, authn.SSLAuthenticator{

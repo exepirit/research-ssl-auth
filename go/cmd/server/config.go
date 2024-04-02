@@ -2,6 +2,7 @@ package main
 
 import "flag"
 
+// Config описывает конфигурацию приложения.
 type Config struct {
 	CertPath    string
 	CertKeyPath string
@@ -11,8 +12,8 @@ type Config struct {
 
 func loadFlagsConfig() (Config, error) {
 	var cfg Config
-	flag.StringVar(&cfg.CertPath, "cert", "certificate.crt", "Certificate file path")
-	flag.StringVar(&cfg.CertKeyPath, "key", "certificate.key", "Certificate key file path")
+	flag.StringVar(&cfg.CertPath, "cert", "certificate.crt", "Server certificate file path")
+	flag.StringVar(&cfg.CertKeyPath, "key", "certificate.key", "Server certificate key file path")
 	flag.StringVar(&cfg.ListenAddr, "listen", "localhost:8080", "Server listen address")
 	flag.StringVar(&cfg.Host, "host", "localhost", "Server host")
 	flag.Parse()
