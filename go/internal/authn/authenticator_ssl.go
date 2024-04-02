@@ -14,7 +14,11 @@ var (
 
 // SSLAuthenticator реализует аутентификацию используя SSL/TLS-сертификаты.
 type SSLAuthenticator struct {
+	// AllowAnonymous позволяет аутентифицироваться пользователям как анонимным.
 	AllowAnonymous bool
+
+	// RootCertificates содержит корневые для клиентских сертификатов.
+	RootCertificates *x509.CertPool
 }
 
 func (auth SSLAuthenticator) AuthHTTP(r *http.Request) (User, error) {
@@ -30,12 +34,28 @@ func (auth SSLAuthenticator) AuthHTTP(r *http.Request) (User, error) {
 
 	certs := r.TLS.PeerCertificates
 	for _, cert := range certs {
-		logger.Debug("found valid client certificate", "subject", cert.Subject.String())
-		return auth.createUserFromCert(cert), nil
+		if err := auth.verifyCert(cert); err == nil {
+			logger.Debug("found valid client certificate", "subject", cert.Subject.String())
+			return auth.createUserFromCert(cert), nil
+		} else {
+			logger.Debug(
+				"client certificate is invalid",
+				"subject", cert.Subject.String(),
+				"reason", err.Error(),
+			)
+		}
 	}
 
 	logger.Debug("request has no valid client certificate")
 	return auth.createUnauthenticatedUser(ErrNoValidCertificate)
+}
+
+func (auth SSLAuthenticator) verifyCert(crt *x509.Certificate) error {
+	// FIXME(security): verify certificate revocation
+	_, err := crt.Verify(x509.VerifyOptions{
+		Roots: auth.RootCertificates,
+	})
+	return err
 }
 
 func (SSLAuthenticator) createUserFromCert(crt *x509.Certificate) User {
