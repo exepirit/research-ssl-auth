@@ -33,7 +33,7 @@ func main() {
 
 	// connect HTTP server middlewares
 	handler := middleware.NewAuthMiddleware(mux, authn.SSLAuthenticator{
-		AllowAnonymous: true,
+		AllowAnonymous: cfg.AllowAnonymous,
 	})
 	handler = middleware.NewRecoverMiddleware(handler)
 	handler = middleware.NewLoggingMiddleware(handler)

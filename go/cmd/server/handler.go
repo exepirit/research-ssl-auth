@@ -16,19 +16,16 @@ type UserDto struct {
 }
 
 type AboutMeResponse struct {
-	Authenticated bool         `json:"authenticated"`
-	User          *UserDto     `json:"user"`
-	TLS           *TLSStateDto `json:"tls"`
+	User *UserDto     `json:"user"`
+	TLS  *TLSStateDto `json:"tls"`
 }
 
 // AboutMeHandler обрабатывает запрос и возвращает информацию о пользователе и соединении в сериализованой
 // модели  AboutMeResponse.
 func AboutMeHandler(writer http.ResponseWriter, request *http.Request) {
-	user, authenticated := middleware.GetCurrentUser(request.Context())
-	response := AboutMeResponse{
-		Authenticated: authenticated,
-	}
+	response := AboutMeResponse{}
 
+	user, authenticated := middleware.GetCurrentUser(request.Context())
 	if authenticated {
 		switch user.Type() {
 		case authn.UserTypeAnonymous:
