@@ -1,5 +1,15 @@
 # research-ssl-auth
-Client and server-side authentication research
+Client and server-side authentication research.
+
+These features planned and may be implemented:
+- Server with TLS authentication.
+  - [x] Go
+  - [ ] C#/.NET
+  - [ ] Python
+- [ ] Client with own TLS certificate.
+  - [ ] Go
+  - [ ] C#/.NET
+  - [ ] Python
 
 ## Quickstart
 
